@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
@@ -7,6 +8,11 @@ using UnityEngine.Windows;
 namespace ECS_Tutorial_Game
 {
     public struct PlayerTag : IComponentData { };
+    public struct CameraTarget : IComponentData 
+    {
+        public UnityObjectRef<Transform> cameraTransform;
+    };
+    public struct InitializeCameraTargetTag : IComponentData { }
 
     public class PlayerAuthoring : MonoBehaviour
     {
@@ -16,7 +22,47 @@ namespace ECS_Tutorial_Game
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                AddComponent(entity, new PlayerTag());
+                AddComponent<PlayerTag>(entity);
+                AddComponent<InitializeCameraTargetTag>(entity);
+                AddComponent<CameraTarget>(entity);
+            }
+        }
+    }
+
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public partial struct CameraInitializationSystem : ISystem 
+    {
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<InitializeCameraTargetTag>();
+        }
+
+        public void OnUpdate(ref SystemState state)
+        {
+            if (CameraTargetSiingleton.Instance == null) return;
+
+            var cameraTargetTransform = CameraTargetSiingleton.Instance.transform;
+
+            var ecb = new EntityCommandBuffer(state.WorldUpdateAllocator);
+
+            foreach (var (cameraTarget, entity) in SystemAPI.Query<RefRW<CameraTarget>>().WithAll<InitializeCameraTargetTag, PlayerTag>().WithEntityAccess())
+            {
+                cameraTarget.ValueRW.cameraTransform = cameraTargetTransform;
+                ecb.RemoveComponent<InitializeCameraTargetTag>(entity);
+            }
+
+            ecb.Playback(state.EntityManager);
+        }
+    }
+
+    [UpdateAfter(typeof(TransformSystemGroup))]
+    public partial struct MoveCameraSystem : ISystem
+    {
+        public void OnUpdate(ref SystemState state)
+        {
+            foreach (var (transform, cameraTarget) in SystemAPI.Query<LocalToWorld, CameraTarget>().WithAll<PlayerTag>().WithNone<InitializeCameraTargetTag>())
+            {
+                cameraTarget.cameraTransform.Value.position = transform.Position;
             }
         }
     }

@@ -4,9 +4,13 @@ using Unity.Mathematics;
 using UnityEngine;
 using Unity.Transforms;
 using Unity.Physics;
+using Unity.Collections;
+using Unity.Burst;
 
 namespace ECS_Tutorial_Game
 {
+    public struct InitializeCharacterFlag : IComponentData, IEnableableComponent { }
+
     public struct CharacterMoveDirection : IComponentData
     {
         public float2 value;
@@ -28,6 +32,7 @@ namespace ECS_Tutorial_Game
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
 
                 AddComponent(entity, new CharacterMoveDirection());
+                AddComponent(entity, new InitializeCharacterFlag());
                 AddComponent(entity, new CharacterMoveSpeed
                 {
                     value = authoring.MoveSpeed
@@ -36,8 +41,23 @@ namespace ECS_Tutorial_Game
         }
     }
 
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    public partial struct CharacterInitializationSystem : ISystem
+    {
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            foreach (var (mass, shouldInitialize) in SystemAPI.Query<RefRW<PhysicsMass>, EnabledRefRW<InitializeCharacterFlag>>())
+            {
+                mass.ValueRW.InverseInertia = float3.zero;
+                shouldInitialize.ValueRW = false;
+            }
+        }
+    }
+
     public partial struct CharacterMoveSystem : ISystem
     {
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
@@ -50,4 +70,6 @@ namespace ECS_Tutorial_Game
             }
         }
     }
+
+
 }
