@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,6 +15,20 @@ namespace ECS_Tutorial_Game
     };
     public struct InitializeCameraTargetTag : IComponentData { }
 
+    [MaterialProperty("_AnimationIndex")]
+    public struct AnimationIndexOverride : IComponentData
+    {
+        public float value;
+    }
+
+    public enum AnimationIndex : byte
+    {
+        Movement = 0,
+        Idle = 1,
+
+        None = byte.MaxValue
+    }
+
     public class PlayerAuthoring : MonoBehaviour
     {
         private class Baker : Baker<PlayerAuthoring>
@@ -25,6 +40,7 @@ namespace ECS_Tutorial_Game
                 AddComponent<PlayerTag>(entity);
                 AddComponent<InitializeCameraTargetTag>(entity);
                 AddComponent<CameraTarget>(entity);
+                AddComponent<AnimationIndexOverride>(entity);
             }
         }
     }

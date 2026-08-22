@@ -1,11 +1,9 @@
-using System.ComponentModel;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using Unity.Transforms;
 using Unity.Physics;
-using Unity.Collections;
 using Unity.Burst;
+using Unity.Rendering;
 
 namespace ECS_Tutorial_Game
 {
@@ -21,6 +19,13 @@ namespace ECS_Tutorial_Game
         public float value;
     }
 
+    [MaterialProperty("_FacingDirection")]
+    public struct FacingDirectionOverride : IComponentData
+    {
+        public float value;
+    }
+
+
     public class CharacterAuthoring : MonoBehaviour
     {
         public float MoveSpeed;
@@ -31,12 +36,15 @@ namespace ECS_Tutorial_Game
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
 
-                AddComponent(entity, new CharacterMoveDirection());
+                // Initialization's
                 AddComponent(entity, new InitializeCharacterFlag());
-                AddComponent(entity, new CharacterMoveSpeed
-                {
-                    value = authoring.MoveSpeed
-                });
+
+                // Movement's
+                AddComponent(entity, new CharacterMoveDirection());
+                AddComponent(entity, new CharacterMoveSpeed { value = authoring.MoveSpeed });
+
+                // Shader's
+                AddComponent(entity, new FacingDirectionOverride { value = 1 });
             }
         }
     }
@@ -70,6 +78,53 @@ namespace ECS_Tutorial_Game
             }
         }
     }
+    public partial struct CharacterDirectionSystem : ISystem
+    {
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            var deltaTime = SystemAPI.Time.DeltaTime;
 
+            foreach(var (faceDir, vel) in SystemAPI.Query<RefRW<FacingDirectionOverride>, CharacterMoveDirection>())
+            {
+                float res = vel.value.x / math.abs(vel.value.x);
 
+                if (math.abs(res) != 1) return;
+
+                faceDir.ValueRW.value = res;
+            }
+        }
+    }
+    public partial struct CharacterAnimationIndexSystem : ISystem
+    {
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            var deltaTime = SystemAPI.Time.DeltaTime;
+
+            foreach (var (animIndex, vel) in SystemAPI.Query<RefRW<AnimationIndexOverride>, CharacterMoveDirection>())
+            {
+                if (math.abs(vel.value.x) > 0.15f)
+                    animIndex.ValueRW.value = (float) AnimationIndex.Movement;
+
+                else
+                    animIndex.ValueRW.value = (float)AnimationIndex.Idle;
+            }
+        }
+    }
+
+    public partial struct GlobalTimeUpdateSystem : ISystem
+    {
+        private static int _globalTimeShaderPropertyID;
+
+        public void OnCreate(ref SystemState state)
+        {
+            _globalTimeShaderPropertyID = Shader.PropertyToID("_GlobalTime");
+        }
+
+        public void OnUpdate(ref SystemState state)
+        {
+            Shader.SetGlobalFloat(_globalTimeShaderPropertyID, (float) SystemAPI.Time.ElapsedTime);
+        }
+    }
 }
