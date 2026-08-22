@@ -25,6 +25,20 @@ namespace ECS_Tutorial_Game
         public float value;
     }
 
+    [MaterialProperty("_AnimationIndex")]
+    public struct AnimationIndexOverride : IComponentData
+    {
+        public float value;
+    }
+
+    public enum AnimationIndex : byte
+    {
+        Movement = 0,
+        Idle = 1,
+
+        None = byte.MaxValue
+    }
+
 
     public class CharacterAuthoring : MonoBehaviour
     {
@@ -45,6 +59,7 @@ namespace ECS_Tutorial_Game
 
                 // Shader's
                 AddComponent(entity, new FacingDirectionOverride { value = 1 });
+                AddComponent(entity, new AnimationIndexOverride { value = 0 });
             }
         }
     }
@@ -89,7 +104,7 @@ namespace ECS_Tutorial_Game
             {
                 float res = vel.value.x / math.abs(vel.value.x);
 
-                if (math.abs(res) != 1) return;
+                if (math.abs(res) != 1) continue;
 
                 faceDir.ValueRW.value = res;
             }

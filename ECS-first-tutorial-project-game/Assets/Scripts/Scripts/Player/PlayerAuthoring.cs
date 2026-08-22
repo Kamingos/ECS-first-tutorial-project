@@ -13,21 +13,11 @@ namespace ECS_Tutorial_Game
     {
         public UnityObjectRef<Transform> cameraTransform;
     };
+    public struct PlayerTransform : IComponentData 
+    {
+        public float2 position;
+    };
     public struct InitializeCameraTargetTag : IComponentData { }
-
-    [MaterialProperty("_AnimationIndex")]
-    public struct AnimationIndexOverride : IComponentData
-    {
-        public float value;
-    }
-
-    public enum AnimationIndex : byte
-    {
-        Movement = 0,
-        Idle = 1,
-
-        None = byte.MaxValue
-    }
 
     public class PlayerAuthoring : MonoBehaviour
     {
@@ -40,7 +30,7 @@ namespace ECS_Tutorial_Game
                 AddComponent<PlayerTag>(entity);
                 AddComponent<InitializeCameraTargetTag>(entity);
                 AddComponent<CameraTarget>(entity);
-                AddComponent<AnimationIndexOverride>(entity);
+                AddComponent<PlayerTransform>(entity);
             }
         }
     }
@@ -101,6 +91,16 @@ namespace ECS_Tutorial_Game
                 float2 _currInput = (float2) action.ReadValue<Vector2>();
 
                 direction.ValueRW.value = _currInput;
+            }
+        }
+    }
+    public partial struct SetPlayerPositionSystem : ISystem
+    {
+        public void OnUpdate(ref SystemState state)
+        {
+            foreach (var (playerTransform, position) in SystemAPI.Query<RefRW<PlayerTransform>, LocalToWorld>().WithAll<PlayerTag>())
+            {
+                playerTransform.ValueRW.position = new float2(position.Position.x, position.Position.y);
             }
         }
     }
