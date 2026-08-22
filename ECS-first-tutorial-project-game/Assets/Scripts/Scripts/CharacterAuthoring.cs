@@ -78,6 +78,7 @@ namespace ECS_Tutorial_Game
         }
     }
 
+    [UpdateAfter(typeof(PlayerInputSystem))]
     public partial struct CharacterMoveSystem : ISystem
     {
         [BurstCompile]
@@ -85,14 +86,15 @@ namespace ECS_Tutorial_Game
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
 
-            foreach(var (vel, dir, speed) in SystemAPI.Query<RefRW<PhysicsVelocity>, CharacterMoveDirection, CharacterMoveSpeed>())
+            foreach(var (vel, dir, speed) in SystemAPI.Query<RefRW<PhysicsVelocity>, RefRO<CharacterMoveDirection>, RefRO<CharacterMoveSpeed>>())
             {
-                var moveStep2D = dir.value * speed.value;
+                var moveStep2D = dir.ValueRO.value * speed.ValueRO.value;
 
                 vel.ValueRW.Linear += new float3(moveStep2D, 0f);
             }
         }
     }
+    [UpdateAfter(typeof(CharacterMoveSystem))]
     public partial struct CharacterDirectionSystem : ISystem
     {
         [BurstCompile]
@@ -110,6 +112,7 @@ namespace ECS_Tutorial_Game
             }
         }
     }
+    [UpdateAfter(typeof(CharacterDirectionSystem))]
     public partial struct CharacterAnimationIndexSystem : ISystem
     {
         [BurstCompile]

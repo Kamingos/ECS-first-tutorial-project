@@ -9,6 +9,7 @@ namespace ECS_Tutorial_Game
 {
     public struct EnemyTag : IComponentData { };
 
+    [RequireComponent(typeof(CharacterAuthoring))]
     public class EnemyAuthoring : MonoBehaviour
     {
         private class Baker : Baker<PlayerAuthoring>
@@ -28,18 +29,30 @@ namespace ECS_Tutorial_Game
         {
             float2? playerPosition = null;
 
-            foreach (var playerTransfromItem in SystemAPI.Query<PlayerTransform>().WithAll<PlayerTag>())
+            foreach (var player in SystemAPI.Query<RefRO<PlayerTransform>>().WithAll<PlayerTag>())
             {
-                playerPosition = playerTransfromItem.position;
+                playerPosition = player.ValueRO.position;
                 break;
             }
 
             if (playerPosition == null)
                 return;
 
-            foreach (var (vel, selfTransform) in SystemAPI.Query<RefRW<CharacterMoveDirection>, LocalToWorld>())
+            foreach (var (vel, selfTransform) in SystemAPI.Query<RefRW<CharacterMoveDirection>, RefRO<LocalToWorld>>())
             {
-                var direction = math.normalize(playerPosition.Value - new float2(selfTransform.Position.x, selfTransform.Position.y));
+
+                float2 enemyPos = new float2(selfTransform.ValueRO.Position.x, selfTransform.ValueRO.Position.y);
+
+                float2 direction = playerPosition.Value - enemyPos;
+
+                if (math.lengthsq(direction) > 0.0001f)
+                {
+                    direction = math.normalize(direction);
+                }
+                else
+                {
+                    direction = float2.zero;
+                }
 
                 vel.ValueRW.value = direction;
             }

@@ -19,6 +19,7 @@ namespace ECS_Tutorial_Game
     };
     public struct InitializeCameraTargetTag : IComponentData { }
 
+
     public class PlayerAuthoring : MonoBehaviour
     {
         private class Baker : Baker<PlayerAuthoring>
