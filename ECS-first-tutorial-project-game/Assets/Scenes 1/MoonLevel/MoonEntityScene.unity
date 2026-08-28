@@ -908,7 +908,7 @@ BoxCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.31464514, y: 0.80908763, z: 1}
@@ -997,6 +997,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7a2552c9d456cb4fbec399fcf5dd609, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ECS_Tutorial_Game.EnemyAuthoring
+  MaxHp: 100
+  Damage: 1
+  CooldownTime: 0
 --- !u!1 &1852250672
 GameObject:
   m_ObjectHideFlags: 0
@@ -1174,7 +1177,7 @@ BoxCollider:
     m_Bits: 0
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
-  m_ProvidesContacts: 0
+  m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.40975904, y: 0.92487836, z: 1}
@@ -1276,6 +1279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3040380beb3ef46428750dab4bba44ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ECS_Tutorial_Game.PlayerAuthoring
+  MaxHp: 100
 --- !u!1 &2135415681
 GameObject:
   m_ObjectHideFlags: 0

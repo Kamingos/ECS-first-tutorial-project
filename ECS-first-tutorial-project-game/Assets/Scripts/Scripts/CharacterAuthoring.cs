@@ -1,9 +1,10 @@
+using ECS_Tutorial_Game.CharacterHealth;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 using Unity.Physics;
-using Unity.Burst;
 using Unity.Rendering;
+using UnityEngine;
 
 namespace ECS_Tutorial_Game
 {
@@ -11,24 +12,24 @@ namespace ECS_Tutorial_Game
 
     public struct CharacterMoveDirection : IComponentData
     {
-        public float2 value;
+        public float2 Value;
     }
 
-    public struct CharacterMoveSpeed: IComponentData
+    public struct CharacterMoveSpeed : IComponentData
     {
-        public float value;
+        public float Value;
     }
 
     [MaterialProperty("_FacingDirection")]
     public struct FacingDirectionOverride : IComponentData
     {
-        public float value;
+        public float Value;
     }
 
     [MaterialProperty("_AnimationIndex")]
     public struct AnimationIndexOverride : IComponentData
     {
-        public float value;
+        public float Value;
     }
 
     public enum AnimationIndex : byte
@@ -55,11 +56,11 @@ namespace ECS_Tutorial_Game
 
                 // Movement's
                 AddComponent(entity, new CharacterMoveDirection());
-                AddComponent(entity, new CharacterMoveSpeed { value = authoring.MoveSpeed });
+                AddComponent(entity, new CharacterMoveSpeed { Value = authoring.MoveSpeed });
 
                 // Shader's
-                AddComponent(entity, new FacingDirectionOverride { value = 1 });
-                AddComponent(entity, new AnimationIndexOverride { value = 0 });
+                AddComponent(entity, new FacingDirectionOverride { Value = 1 });
+                AddComponent(entity, new AnimationIndexOverride { Value = 0 });
             }
         }
     }
@@ -86,9 +87,9 @@ namespace ECS_Tutorial_Game
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
 
-            foreach(var (vel, dir, speed) in SystemAPI.Query<RefRW<PhysicsVelocity>, RefRO<CharacterMoveDirection>, RefRO<CharacterMoveSpeed>>())
+            foreach (var (vel, dir, speed) in SystemAPI.Query<RefRW<PhysicsVelocity>, RefRO<CharacterMoveDirection>, RefRO<CharacterMoveSpeed>>())
             {
-                var moveStep2D = dir.ValueRO.value * speed.ValueRO.value;
+                var moveStep2D = dir.ValueRO.Value * speed.ValueRO.Value;
 
                 vel.ValueRW.Linear += new float3(moveStep2D, 0f);
             }
@@ -102,13 +103,13 @@ namespace ECS_Tutorial_Game
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
 
-            foreach(var (faceDir, vel) in SystemAPI.Query<RefRW<FacingDirectionOverride>, CharacterMoveDirection>())
+            foreach (var (faceDir, vel) in SystemAPI.Query<RefRW<FacingDirectionOverride>, CharacterMoveDirection>())
             {
-                float res = vel.value.x / math.abs(vel.value.x);
+                float res = vel.Value.x / math.abs(vel.Value.x);
 
                 if (math.abs(res) != 1) continue;
 
-                faceDir.ValueRW.value = res;
+                faceDir.ValueRW.Value = res;
             }
         }
     }
@@ -122,11 +123,11 @@ namespace ECS_Tutorial_Game
 
             foreach (var (animIndex, vel) in SystemAPI.Query<RefRW<AnimationIndexOverride>, CharacterMoveDirection>())
             {
-                if (math.abs(vel.value.x) > 0.15f)
-                    animIndex.ValueRW.value = (float) AnimationIndex.Movement;
+                if (math.abs(vel.Value.x) > 0.15f)
+                    animIndex.ValueRW.Value = (float)AnimationIndex.Movement;
 
                 else
-                    animIndex.ValueRW.value = (float)AnimationIndex.Idle;
+                    animIndex.ValueRW.Value = (float)AnimationIndex.Idle;
             }
         }
     }
@@ -142,7 +143,7 @@ namespace ECS_Tutorial_Game
 
         public void OnUpdate(ref SystemState state)
         {
-            Shader.SetGlobalFloat(_globalTimeShaderPropertyID, (float) SystemAPI.Time.ElapsedTime);
+            Shader.SetGlobalFloat(_globalTimeShaderPropertyID, (float)SystemAPI.Time.ElapsedTime);
         }
     }
 }

@@ -1,3 +1,4 @@
+using ECS_Tutorial_Game.CharacterHealth;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Rendering;
@@ -19,9 +20,11 @@ namespace ECS_Tutorial_Game
     };
     public struct InitializeCameraTargetTag : IComponentData { }
 
-
+    [RequireComponent(typeof(CharacterAuthoring))]
     public class PlayerAuthoring : MonoBehaviour
     {
+        [SerializeField] private int MaxHp;
+
         private class Baker : Baker<PlayerAuthoring>
         {
             public override void Bake(PlayerAuthoring authoring)
@@ -32,6 +35,15 @@ namespace ECS_Tutorial_Game
                 AddComponent<InitializeCameraTargetTag>(entity);
                 AddComponent<CameraTarget>(entity);
                 AddComponent<PlayerTransform>(entity);
+
+                // Helath
+                AddComponent(entity, new HealthPointComponent
+                {
+                    MaxHp = authoring.MaxHp,
+                    CurrentHp = authoring.MaxHp
+                });
+
+                AddBuffer<CharacterAttackBufferComponent>(entity);
             }
         }
     }
@@ -91,7 +103,7 @@ namespace ECS_Tutorial_Game
             {
                 float2 _currInput = (float2) action.ReadValue<Vector2>();
 
-                direction.ValueRW.value = _currInput;
+                direction.ValueRW.Value = _currInput;
             }
         }
     }
