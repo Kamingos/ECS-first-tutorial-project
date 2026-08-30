@@ -1,11 +1,10 @@
 using ECS_Tutorial_Game.CharacterHealth;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
+using ECS_Tutorial_Game.CharacterAuthoring;
 
 namespace ECS_Tutorial_Game
 {
@@ -20,7 +19,7 @@ namespace ECS_Tutorial_Game
     };
     public struct InitializeCameraTargetTag : IComponentData { }
 
-    [RequireComponent(typeof(CharacterAuthoring))]
+    [RequireComponent(typeof(CharacterAuthoring.CharacterAuthoring))]
     public class PlayerAuthoring : MonoBehaviour
     {
         [SerializeField] private int MaxHp;

@@ -1,4 +1,5 @@
 
+using ECS_Tutorial_Game.DestroyCharacter;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Physics;
@@ -25,7 +26,7 @@ namespace ECS_Tutorial_Game.CharacterHealth
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (health, buff) in SystemAPI.Query<RefRW<HealthPointComponent>, DynamicBuffer<CharacterAttackBufferComponent>>())
+            foreach (var (health, buff, entity) in SystemAPI.Query<RefRW<HealthPointComponent>, DynamicBuffer<CharacterAttackBufferComponent>>().WithPresent<DestroyEntityFlag>().WithEntityAccess())
             {
                 foreach (var item in buff)
                 {
@@ -33,6 +34,9 @@ namespace ECS_Tutorial_Game.CharacterHealth
                 }
 
                 buff.Clear();
+
+                if (health.ValueRW.CurrentHp <= 0)
+                    SystemAPI.SetComponentEnabled<DestroyEntityFlag>(entity, true);
             }
         }
     }

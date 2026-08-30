@@ -1,6 +1,6 @@
 using ECS_Tutorial_Game.CharacterAttack;
+using ECS_Tutorial_Game.CharacterAuthoring;
 using ECS_Tutorial_Game.CharacterHealth;
-using System.Linq;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -12,7 +12,7 @@ namespace ECS_Tutorial_Game
 {
     public struct EnemyTag : IComponentData { };
 
-    [RequireComponent(typeof(CharacterAuthoring))]
+    [RequireComponent(typeof(CharacterAuthoring.CharacterAuthoring))]
     public class EnemyAuthoring : MonoBehaviour
     {
         [SerializeField] private int MaxHp;

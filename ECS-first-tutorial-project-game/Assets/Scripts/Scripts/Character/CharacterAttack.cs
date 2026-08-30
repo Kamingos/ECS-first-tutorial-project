@@ -21,8 +21,10 @@ namespace ECS_Tutorial_Game.CharacterAttack
 
     }
 
+    [BurstCompile]
     public partial struct UpdateCharacterRechargedAttack : ISystem
     {
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             foreach (var (rechargeEnabledComp, rechargeComp, attackComp) in SystemAPI.Query<EnabledRefRW<IsCharacterRechargedAttack>, RefRO<IsCharacterRechargedAttack>, RefRO<CharacterAttackComponent>>())

@@ -998,8 +998,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ECS_Tutorial_Game.EnemyAuthoring
   MaxHp: 100
-  Damage: 1
-  CooldownTime: 0
+  Damage: 2
+  CooldownTime: 1
 --- !u!1 &1852250672
 GameObject:
   m_ObjectHideFlags: 0
