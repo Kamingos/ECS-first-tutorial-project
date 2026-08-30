@@ -1,6 +1,7 @@
 using ECS_Tutorial_Game.CharacterAttack;
 using ECS_Tutorial_Game.CharacterAuthoring;
 using ECS_Tutorial_Game.CharacterHealth;
+using ECS_Tutorial_Game.DestroyCharacter;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -38,7 +39,7 @@ namespace ECS_Tutorial_Game
                 AddComponent<IsCharacterRechargedAttack>(entity);
                 SetComponentEnabled<IsCharacterRechargedAttack>(entity, false);
 
-                AddComponent(entity, new CharacterAttackComponent
+                AddComponent(entity, new EnemyAttackComponent
                 {
                     Damage = authoring.Damage,
                     CooldownTime = authoring.CooldownTime,
@@ -85,40 +86,4 @@ namespace ECS_Tutorial_Game
             dir.Value = math.normalize(vecToPlayer);
         }
     }
-
-    //public partial struct EnemyPursuitSystem : ISystem
-    //{
-    //    public void OnUpdate(ref SystemState state)
-    //    {
-    //        float2? playerPosition = null;
-
-    //        foreach (var player in SystemAPI.Query<RefRO<PlayerTransform>>().WithAll<PlayerTag>())
-    //        {
-    //            playerPosition = player.ValueRO.position;
-    //            break;
-    //        }
-
-    //        if (playerPosition == null)
-    //            return;
-
-    //        foreach (var (vel, selfTransform) in SystemAPI.Query<RefRW<CharacterMoveDirection>, RefRO<LocalToWorld>>())
-    //        {
-
-    //            float2 enemyPos = new float2(selfTransform.ValueRO.Position.x, selfTransform.ValueRO.Position.y);
-
-    //            float2 direction = playerPosition.Value - enemyPos;
-
-    //            if (math.lengthsq(direction) > 0.0001f)
-    //            {
-    //                direction = math.normalize(direction);
-    //            }
-    //            else
-    //            {
-    //                direction = float2.zero;
-    //            }
-
-    //            vel.ValueRW.value = direction;
-    //        }
-    //    }
-    //}
 }

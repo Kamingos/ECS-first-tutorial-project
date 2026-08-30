@@ -998,7 +998,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ECS_Tutorial_Game.EnemyAuthoring
   MaxHp: 100
-  Damage: 2
+  Damage: 10
   CooldownTime: 1
 --- !u!1 &1852250672
 GameObject:
@@ -1280,6 +1280,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ECS_Tutorial_Game.PlayerAuthoring
   MaxHp: 100
+  BlasterBlastPrefab: {fileID: 3205325118442066208, guid: 8652e88da99f09e4786653fa3e0fa0ee, type: 3}
+  AttackCooldownTime: 1
+  DetectionSize: 10
 --- !u!1 &2135415681
 GameObject:
   m_ObjectHideFlags: 0

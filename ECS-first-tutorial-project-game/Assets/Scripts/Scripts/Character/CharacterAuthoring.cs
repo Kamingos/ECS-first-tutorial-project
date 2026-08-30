@@ -1,3 +1,4 @@
+using ECS_Tutorial_Game.CharacterHealth;
 using ECS_Tutorial_Game.DestroyCharacter;
 using Unity.Burst;
 using Unity.Entities;
@@ -61,6 +62,9 @@ namespace ECS_Tutorial_Game.CharacterAuthoring
                 // Shader's
                 AddComponent(entity, new FacingDirectionOverride { Value = 1 });
                 AddComponent(entity, new AnimationIndexOverride { Value = 0 });
+
+                // Health
+                AddBuffer<CharacterAttackBufferComponent>(entity);
 
                 // Destroy
                 AddComponent<DestroyEntityFlag>(entity);

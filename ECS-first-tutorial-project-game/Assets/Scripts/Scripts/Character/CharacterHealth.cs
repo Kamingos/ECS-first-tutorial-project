@@ -21,14 +21,26 @@ namespace ECS_Tutorial_Game.CharacterHealth
     }
 
     [UpdateAfter(typeof(PhysicsSimulationGroup))]
-    [BurstCompile]
     public partial struct ApplyDamageBufferToCharacterPerFrame : ISystem
     {
+        private static int TotalDamage(in DynamicBuffer<CharacterAttackBufferComponent> buff)
+        {
+            int sum = 0;
+            foreach (var item in buff) sum += item.Value;
+            return sum;
+        }
+
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (health, buff, entity) in SystemAPI.Query<RefRW<HealthPointComponent>, DynamicBuffer<CharacterAttackBufferComponent>>().WithPresent<DestroyEntityFlag>().WithEntityAccess())
+            foreach (var (health, buff, entity) in SystemAPI.Query<RefRW<HealthPointComponent>, DynamicBuffer<CharacterAttackBufferComponent>>().WithDisabled<DestroyEntityFlag>().WithEntityAccess())
             {
+                if (!buff.IsEmpty)
+                {
+                    // ВРЕМЕННАЯ ДИАГНОСТИКА
+                    UnityEngine.Debug.Log($"[HP] Entity {entity.Index}: получено урона {buff.Length} ед., HP {health.ValueRO.CurrentHp} -> {health.ValueRO.CurrentHp - TotalDamage(buff)}");
+                }
+
                 foreach (var item in buff)
                 {
                     health.ValueRW.CurrentHp -= item.Value;

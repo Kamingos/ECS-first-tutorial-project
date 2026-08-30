@@ -8,7 +8,7 @@ using Unity.Physics.Systems;
 
 namespace ECS_Tutorial_Game.CharacterAttack
 {
-    public struct CharacterAttackComponent : IComponentData
+    public struct EnemyAttackComponent : IComponentData
     {
         public int Damage;
         public float CooldownTime;
@@ -27,7 +27,7 @@ namespace ECS_Tutorial_Game.CharacterAttack
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (rechargeEnabledComp, rechargeComp, attackComp) in SystemAPI.Query<EnabledRefRW<IsCharacterRechargedAttack>, RefRO<IsCharacterRechargedAttack>, RefRO<CharacterAttackComponent>>())
+            foreach (var (rechargeEnabledComp, rechargeComp, attackComp) in SystemAPI.Query<EnabledRefRW<IsCharacterRechargedAttack>, RefRO<IsCharacterRechargedAttack>, RefRO<EnemyAttackComponent>>())
             {
                 if (rechargeEnabledComp.ValueRO == false)
                     continue;
@@ -46,14 +46,14 @@ namespace ECS_Tutorial_Game.CharacterAttack
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var job = new CollisionDamageEventJob
+            var job = new EnemyCollisionDamageEventJob
             {
                 ElapsedTime = SystemAPI.Time.ElapsedTime,
 
                 playerTagLookup = SystemAPI.GetComponentLookup<PlayerTag>(),
                 enemyTagLookup = SystemAPI.GetComponentLookup<EnemyTag>(),
 
-                enemyAttackLookup = SystemAPI.GetComponentLookup<CharacterAttackComponent>(),
+                enemyAttackLookup = SystemAPI.GetComponentLookup<EnemyAttackComponent>(),
 
                 playerAttackBufferLookup = SystemAPI.GetBufferLookup<CharacterAttackBufferComponent>(false),
 
@@ -65,7 +65,7 @@ namespace ECS_Tutorial_Game.CharacterAttack
     }
 
     [BurstCompile]
-    public partial struct CollisionDamageEventJob : ICollisionEventsJob
+    public partial struct EnemyCollisionDamageEventJob : ICollisionEventsJob
     {
         public double ElapsedTime;
 
@@ -73,7 +73,7 @@ namespace ECS_Tutorial_Game.CharacterAttack
         public ComponentLookup<EnemyTag> enemyTagLookup;
 
         public BufferLookup<CharacterAttackBufferComponent> playerAttackBufferLookup;
-        public ComponentLookup<CharacterAttackComponent> enemyAttackLookup;
+        public ComponentLookup<EnemyAttackComponent> enemyAttackLookup;
 
         public ComponentLookup<IsCharacterRechargedAttack> isEnemyRechargedAttackLookup;
 
@@ -96,11 +96,9 @@ namespace ECS_Tutorial_Game.CharacterAttack
             else
                 return;
 
-// Если враг уже перезаряжается (компонент включён) — выходим
             if (isEnemyRechargedAttackLookup.IsComponentEnabled(enemyEntity))
                 return;
 
-            // Включаем перезарядку и наносим урон
             isEnemyRechargedAttackLookup.GetRefRW(enemyEntity).ValueRW.StartRechargingTime = ElapsedTime;
             isEnemyRechargedAttackLookup.SetComponentEnabled(enemyEntity, true);
 
