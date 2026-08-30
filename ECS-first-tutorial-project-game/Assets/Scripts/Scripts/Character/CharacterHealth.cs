@@ -1,5 +1,6 @@
 
 using ECS_Tutorial_Game.DestroyCharacter;
+using TMG.Survivors;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Physics;
@@ -36,7 +37,14 @@ namespace ECS_Tutorial_Game.CharacterHealth
                 buff.Clear();
 
                 if (health.ValueRW.CurrentHp <= 0)
+                {
+                    if (SystemAPI.HasComponent<PlayerTag>(entity))
+                    {
+                        GameUIController.Instance.ShowGameOverUI();
+                    }
+
                     SystemAPI.SetComponentEnabled<DestroyEntityFlag>(entity, true);
+                }
             }
         }
     }
