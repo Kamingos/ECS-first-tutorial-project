@@ -219,8 +219,6 @@ namespace ECS_Tutorial_Game
 
                 var newAttack = ecb.Instantiate(attackData.AttackPrefab);
 
-                spawnPos += math.normalize(vectorToClosestEnemy);
-
                 ecb.SetComponent(newAttack, LocalTransform.FromPositionRotation(spawnPos, spawnOrientation));
 
                 expirationTimeStamp.ValueRW.Value = elapsedTime + attackData.CooldownTime;

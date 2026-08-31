@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ECS_Tutorial_Game.Attacks.PlasmaBlast.PlasmaBlastAuthoring
   MoveSpeed: 10
-  AttackDamage: 10
+  AttackDamage: 20
 --- !u!65 &-901606494761664564
 BoxCollider:
   m_ObjectHideFlags: 0

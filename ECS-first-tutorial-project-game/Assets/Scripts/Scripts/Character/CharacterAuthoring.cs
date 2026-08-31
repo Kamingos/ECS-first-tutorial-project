@@ -131,7 +131,7 @@ namespace ECS_Tutorial_Game.CharacterAuthoring
 
             foreach (var (animIndex, vel) in SystemAPI.Query<RefRW<AnimationIndexOverride>, CharacterMoveDirection>())
             {
-                if (math.abs(vel.Value.x) > 0.15f)
+                if (math.abs(vel.Value.x) + math.abs(vel.Value.y) > 0.15f)
                     animIndex.ValueRW.Value = (float)AnimationIndex.Movement;
 
                 else

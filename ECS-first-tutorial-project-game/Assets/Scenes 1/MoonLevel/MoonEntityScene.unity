@@ -860,7 +860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ECS_Tutorial_Game.EnemySpawner.EnemySpawnerAuthoring
   EnemyPrefab: {fileID: 2140664445422159165, guid: b0ca78a7ebd155644b10a935d0889ac4, type: 3}
-  EnemySpawnInterval: 1
+  EnemySpawnInterval: 0.5
   EnemySpawnDistance: 10
   RandomSeed: 67
 --- !u!4 &1550524492
@@ -1159,7 +1159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ECS_Tutorial_Game.PlayerAuthoring
   MaxHp: 100
   BlasterBlastPrefab: {fileID: 3205325118442066208, guid: 8652e88da99f09e4786653fa3e0fa0ee, type: 3}
-  AttackCooldownTime: 1
+  AttackCooldownTime: 0.25
   DetectionSize: 10
 --- !u!1 &2135415681
 GameObject:
