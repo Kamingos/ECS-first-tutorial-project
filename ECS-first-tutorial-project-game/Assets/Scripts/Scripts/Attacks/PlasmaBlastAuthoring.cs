@@ -1,4 +1,5 @@
 ﻿using ECS_Tutorial_Game.CharacterHealth;
+using ECS_Tutorial_Game.DestroyCharacter;
 using System.ComponentModel;
 using Unity.Entities;
 using Unity.Physics;
@@ -31,6 +32,8 @@ namespace ECS_Tutorial_Game.Attacks.PlasmaBlast
                     MoveSpeed = authoring.MoveSpeed,
                     AttackDamage = authoring.AttackDamage,
                 });
+                AddComponent<DestroyEntityFlag>(entity);
+                SetComponentEnabled<DestroyEntityFlag>(entity, false);
             }
         }
     }
@@ -38,7 +41,6 @@ namespace ECS_Tutorial_Game.Attacks.PlasmaBlast
     {
         public void OnUpdate(ref SystemState state)
         {
-            // Задаём постоянную скорость полёта, а не накапливаем её
             foreach (var (vel, loc, blastData) in SystemAPI.Query<RefRW<PhysicsVelocity>, LocalToWorld, PlasmaBlastData>())
             {
                 vel.ValueRW.Linear = loc.Right * blastData.MoveSpeed;
@@ -60,17 +62,12 @@ namespace ECS_Tutorial_Game.Attacks.PlasmaBlast
                 PlasmaBlastLookup = SystemAPI.GetComponentLookup<PlasmaBlastData>(),
                 EnemyLookup = SystemAPI.GetComponentLookup<EnemyTag>(),
                 AttackBufferLookup = SystemAPI.GetBufferLookup<CharacterAttackBufferComponent>(false),
+                DestroyFlag = SystemAPI.GetComponentLookup<DestroyEntityFlag>(false),
             };
 
             var simulationSingleton = SystemAPI.GetSingleton<SimulationSingleton>();
 
             state.Dependency = job.Schedule(simulationSingleton, state.Dependency);
-
-            if (!_loggedOnce)
-            {
-                _loggedOnce = true;
-                Debug.Log("[Blast] PlasmaBlastAttackSystem запущен");
-            }
         }
     }
 
@@ -81,11 +78,10 @@ namespace ECS_Tutorial_Game.Attacks.PlasmaBlast
 
         public BufferLookup<CharacterAttackBufferComponent> AttackBufferLookup;
 
+        public ComponentLookup<DestroyEntityFlag> DestroyFlag;
+
         public void Execute(TriggerEvent triggerEvent)
         {
-            // ВРЕМЕННАЯ ДИАГНОСТИКА
-            Debug.Log($"[Blast] Trigger event: A={triggerEvent.EntityA.Index} B={triggerEvent.EntityB.Index}");
-
             Entity plasmaBlastEntity;
             Entity enemyEntity;
 
@@ -104,14 +100,14 @@ namespace ECS_Tutorial_Game.Attacks.PlasmaBlast
             else
                 return;
 
-            Debug.Log($"[Blast] Попадание! Урон {PlasmaBlastLookup[plasmaBlastEntity].AttackDamage} -> враг {enemyEntity.Index}");
-
             var buffer = AttackBufferLookup[enemyEntity];
 
             buffer.Add(new CharacterAttackBufferComponent
             {
                 Value = PlasmaBlastLookup[plasmaBlastEntity].AttackDamage
             });
+
+            DestroyFlag.SetComponentEnabled(plasmaBlastEntity, true);
         }
     }
 }

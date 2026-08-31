@@ -38,8 +38,7 @@ namespace ECS_Tutorial_Game
     [RequireComponent(typeof(CharacterAuthoring.CharacterAuthoring))]
     public class PlayerAuthoring : MonoBehaviour
     {
-        [SerializeField] private int MaxHp;
-
+        public int MaxHp;
         public GameObject BlasterBlastPrefab;
         public float AttackCooldownTime;
         public float DetectionSize;
