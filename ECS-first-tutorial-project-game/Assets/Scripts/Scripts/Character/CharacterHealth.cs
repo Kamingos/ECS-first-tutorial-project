@@ -35,12 +35,6 @@ namespace ECS_Tutorial_Game.CharacterHealth
         {
             foreach (var (health, buff, entity) in SystemAPI.Query<RefRW<HealthPointComponent>, DynamicBuffer<CharacterAttackBufferComponent>>().WithDisabled<DestroyEntityFlag>().WithEntityAccess())
             {
-                if (!buff.IsEmpty)
-                {
-                    // ВРЕМЕННАЯ ДИАГНОСТИКА
-                    UnityEngine.Debug.Log($"[HP] Entity {entity.Index}: получено урона {buff.Length} ед., HP {health.ValueRO.CurrentHp} -> {health.ValueRO.CurrentHp - TotalDamage(buff)}");
-                }
-
                 foreach (var item in buff)
                 {
                     health.ValueRW.CurrentHp -= item.Value;

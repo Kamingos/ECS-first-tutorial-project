@@ -1,7 +1,7 @@
 using ECS_Tutorial_Game.CharacterAttack;
 using ECS_Tutorial_Game.CharacterAuthoring;
 using ECS_Tutorial_Game.CharacterHealth;
-using ECS_Tutorial_Game.DestroyCharacter;
+using ECS_Tutorial_Game.Gem;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -19,6 +19,8 @@ namespace ECS_Tutorial_Game
         [SerializeField] private int MaxHp;
         [SerializeField] private int Damage;
         [SerializeField] private float CooldownTime;
+
+        [SerializeField] private GameObject GemEntityPrefab;
 
         private class Baker : Baker<EnemyAuthoring>
         {
@@ -43,6 +45,12 @@ namespace ECS_Tutorial_Game
                 {
                     Damage = authoring.Damage,
                     CooldownTime = authoring.CooldownTime,
+                });
+
+                // Gem
+                AddComponent(entity, new CharacterDropGemComponent
+                {
+                    GemEntityPrefab = GetEntity(authoring.GemEntityPrefab, TransformUsageFlags.Renderable)
                 });
             }
         }

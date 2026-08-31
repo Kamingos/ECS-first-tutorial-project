@@ -1,5 +1,6 @@
 ﻿using ECS_Tutorial_Game.CharacterHealth;
 using ECS_Tutorial_Game.DestroyCharacter;
+using ECS_Tutorial_Game.Gem;
 using System.ComponentModel;
 using Unity.Entities;
 using Unity.Physics;

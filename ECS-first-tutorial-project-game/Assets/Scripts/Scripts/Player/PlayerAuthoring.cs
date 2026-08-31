@@ -1,12 +1,13 @@
+using ECS_Tutorial_Game.CharacterAuthoring;
 using ECS_Tutorial_Game.CharacterHealth;
+using ECS_Tutorial_Game.Gem;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using ECS_Tutorial_Game.CharacterAuthoring;
-using Unity.Physics;
-using Unity.Collections;
 
 namespace ECS_Tutorial_Game
 {
@@ -81,6 +82,10 @@ namespace ECS_Tutorial_Game
                 });
 
                 AddComponent<PlayerCooldownExpirationTimestamp>(entity);
+
+                // GemScore
+                AddComponent<GemScore>(entity);
+
             }
         }
     }
