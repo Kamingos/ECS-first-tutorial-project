@@ -1,6 +1,7 @@
 using ECS_Tutorial_Game.CharacterAuthoring;
 using ECS_Tutorial_Game.CharacterHealth;
 using ECS_Tutorial_Game.Gem;
+using ECS_Tutorial_Game.WorldUI;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -44,6 +45,8 @@ namespace ECS_Tutorial_Game
         public float AttackCooldownTime;
         public float DetectionSize;
 
+        public UnityObjectRef<GameObject> HealthBarSlider;
+
         private class Baker : Baker<PlayerAuthoring>
         {
             public override void Bake(PlayerAuthoring authoring)
@@ -86,6 +89,11 @@ namespace ECS_Tutorial_Game
                 // GemScore
                 AddComponent<GemScore>(entity);
 
+                // World UI Bar
+                AddComponent(entity, new WorldUIComponentPrefab
+                {
+                    HealthBarSliderPrefab = authoring.HealthBarSlider
+                });
             }
         }
     }
